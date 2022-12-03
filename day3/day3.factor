@@ -1,4 +1,4 @@
-! Copyright (C) 2022 Your name.
+! Copyright (C) 2022 Mukhamed Karanashev.
 ! See http://factorcode.org/license.txt for BSD license.
 USING: combinators grouping io.encodings.utf8 io.files kernel math math.order
 sequences sets ;
@@ -17,7 +17,7 @@ IN: aoc2022.day3
 
 : find-wrong-item ( str -- c )
     dup length 2 / cut intersect first ;
-    
+
 : calc-part1 ( str-seq -- n )
     [ find-wrong-item calc-priority ] map sum ;
 
