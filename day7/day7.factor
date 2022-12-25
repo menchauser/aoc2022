@@ -1,8 +1,8 @@
 ! Copyright (C) 2022 Your name.
 ! See http://factorcode.org/license.txt for BSD license.
 USING: accessors arrays assocs combinators io io.encodings.utf8 io.files kernel
-math math.order math.parser namespaces prettyprint.custom sequences splitting
-strings vectors ;
+math math.order math.parser namespaces prettyprint.custom sequences
+sorting.slots splitting strings vectors ;
 IN: aoc2022.day7
 
 TUPLE: fs-node
@@ -84,16 +84,24 @@ SYMBOL: CWD
         size>>
     ] if ;
 
+: flatten-tree ( fs-node -- seq )
+    [ 1array ]
+    [ children>> [ flatten-tree ] map concat ] bi
+    prepend ;
+
 : find-small-nodes ( fs-node -- seq )
-    dup size>> 100000 <= [
-        dup 1array
-    ] [
-        { }
-    ] if
-    swap children>> [ find-small-nodes ] map concat prepend ;
+    flatten-tree [
+        [ dir?>> ]
+        [ size>> 100000 < ] bi and 
+    ] filter ; 
 
 : calc-part1 ( fs-node -- total-sum )
-    ! Find all the directories with size < 100_000 and collect their sum
-    ! To do that we have to traverse recursively
-    dup calc-size! drop
+    dup calc-size! drop ! hacky way to fill directory sizes
     find-small-nodes [ dir?>> ] filter [ size>> ] map sum ;
+
+:: calc-part2 ( fs-node -- total-sum )
+    fs-node calc-size! drop
+    30000000 70000000 fs-node size>> - - :> threshold ! required unused space
+    fs-node flatten-tree [ dir?>> ] filter
+    { { size>> <=> } } sort-by
+    [ size>> ] map [ threshold >= ] find nip ; 
