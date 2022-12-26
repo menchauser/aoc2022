@@ -48,37 +48,36 @@ IN: aoc2022.day8
     ! I need found-idx found-idx i
     dup [ 1 + nip ] [ drop ] if ;
 
+! Part 2
+
+! Find number of elements that can be viewed from the height
+: generic-distance ( seq height -- n )
+    [ drop length ] 2keep 
+    [ >= ] curry find drop 
+    dup [ 1 + nip ] [ drop ] if ;
+
 :: up-distance ( i j 2d-seq -- n )
     ! cut a column from 0 to i - 1 and find the last element >= height
     2d-seq j <column> :> col
     i col nth :> height
-    col i head-slice reverse [ height >= ] find drop :> found-idx
-    ! if we found no higher trees then the distance equal to row number
-    found-idx [ found-idx 1 + ] [ i ] if ;
+    col i head-slice reverse height generic-distance ;
 
 :: down-distance ( i j 2d-seq -- n )
     ! cut a column from i+1 to length - 1 and find the first element >= height
     2d-seq j <column> :> col
     i col nth :> height
-    col i 1 + tail-slice :> col-slice
-    col-slice [ height >= ] find drop :> found-idx
-    found-idx [ found-idx 1 + ] [ col-slice length ] if ;
+    col i 1 + tail-slice height generic-distance ;
 
 :: left-distance ( i j 2d-seq -- n )
     i 2d-seq nth :> row
     j row nth :> height
-    row j head-slice reverse [ height >= ] find drop :> found-idx
-    found-idx [ found-idx 1 + ] [ j ] if ; 
+    row j head-slice reverse height generic-distance ;
 
 :: right-distance ( i j 2d-seq -- n )
     i 2d-seq nth :> row
     j row nth :> height
-    row j 1 + tail-slice :> row-slice
-    row-slice [ height >= ] find drop :> found-idx
-    found-idx [ found-idx 1 + ] [ row-slice length ] if ;
+    row j 1 + tail-slice height generic-distance ;
 
-
-! Part 2
 : scenic-score ( i j 2d-seq -- n )
     {
         [ up-distance ]

@@ -47,3 +47,5 @@ IN: aoc2022.day8.tests
 
 { 4 } [ 1 2 "test.txt" load-input scenic-score ] unit-test 
 { 8 } [ 3 2 "test.txt" load-input scenic-score ] unit-test
+
+{ 8 } [ "test.txt" load-input calc-part2 ] unit-test
